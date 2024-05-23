@@ -22,4 +22,4 @@ services:
       - 6667:6667
     environment:
       - NODE_ENV=production
-    command: npm dev
+    command: npm run dev
