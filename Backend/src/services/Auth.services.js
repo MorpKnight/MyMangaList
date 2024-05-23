@@ -28,9 +28,9 @@ exports.login = async (body) => {
         const validPassword = await bcrypt.compare(password, user.password);
 
         if (!validPassword) throw new Error('Invalid password');
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET);
 
-        return { message: 'Login successful', token, user: { id: user._id, username: user.username, email: user.email } };
+        return { message: 'Login successful', token, data: { id: user._id, username: user.username, email: user.email } };
     } catch (error) {
         return { message: error.message }
     }

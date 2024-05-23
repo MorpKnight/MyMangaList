@@ -7,6 +7,7 @@ const listSchema = new mongoose.Schema({
     score: { type: Number, required: false, min: 1, max: 10 },
     start_date: { type: Date, required: false },
     end_date: { type: Date, required: false },
+    review_text: { type: String, required: false },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
