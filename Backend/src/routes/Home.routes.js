@@ -4,6 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', homeControllers.getHome);
-router.post('/add', authMiddlewares.isAdmin, homeControllers.addMedia);
+router.post('/add', authMiddlewares.authenticate, authMiddlewares.isAdmin, homeControllers.addMedia);
 
 module.exports = router;
