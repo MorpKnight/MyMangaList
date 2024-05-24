@@ -122,8 +122,7 @@ exports.updateMediaDetail = async (params, body) => {
     try {
         const { id } = params;
         const { ...media } = body;
-        if (!media.title || !media.type || !media.author || !media.description || !media.status) throw new Error('Please fill all fields');
-        const updatedMedia = await Media.findByIdAndUpdate(id, { ...media }, { new: true }).exec();
+        const updatedMedia = await Media.findByIdAndUpdate(id, { ...media, updated_at: Date.now() }, { new: true }).exec();
         if (!updatedMedia) throw new Error('Media not found');
 
         return { message: 'Media updated successfully', data: updatedMedia };
