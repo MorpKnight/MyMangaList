@@ -53,7 +53,7 @@ exports.viewReview = async (user_id) => {
         const userReviews = await List.find({ user_id }).exec();
         if (!userReviews) throw new Error('Error getting user reviews');
 
-        const reviews = userReviews.filter(review => review.review_text !== null);
+        const reviews = userReviews.filter(review => review.review_text);
 
         return { message: 'User reviews found', data: reviews };
     } catch (error) {

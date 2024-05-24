@@ -10,7 +10,7 @@ router.post('/review/:id', authMiddlewares.authenticate, detailControllers.addRe
 router.put('/review/:id', authMiddlewares.authenticate, detailControllers.updateReview);
 router.delete('/review/:id', authMiddlewares.authenticate, detailControllers.deleteReview);
 router.get('/review/:id', detailControllers.getMediaReview);
-router.put('/:id', authMiddlewares.isAdmin, detailControllers.updateMediaDetail);
-router.delete('/:id', authMiddlewares.isAdmin, detailControllers.deleteMedia);
+router.put('/:id', authMiddlewares.authenticate, authMiddlewares.isAdmin, detailControllers.updateMediaDetail);
+router.delete('/:id', authMiddlewares.authenticate, authMiddlewares.isAdmin, detailControllers.deleteMedia);
 
 module.exports = router;
