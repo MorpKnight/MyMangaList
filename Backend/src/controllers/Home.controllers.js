@@ -1,6 +1,6 @@
 const homeServices = require('../services/Home.services');
 
-exports.getHomeData = async (req, res) => {
+exports.getHome = async (req, res) => {
     try {
         const homeData = await homeServices.getHome();
         if (!homeData.data) throw new Error(homeData.message);

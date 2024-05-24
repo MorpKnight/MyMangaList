@@ -33,7 +33,7 @@ const HomePage = () => {
               }
 
               if (data.newestMedia) {
-                console.log(data);
+                console.log('Newest Media:',data.newestMedia);
                 setNewestManga(data.newestMedia.Manga || []);
                 setNewestManhwa(data.newestMedia.Manhwa || []);
                 setNewestNovel(data.newestMedia.Novel || []);
