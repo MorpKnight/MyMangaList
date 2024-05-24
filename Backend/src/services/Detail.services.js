@@ -22,10 +22,11 @@ exports.addToUserList = async (user_id, params, body) => {
         if (score && (score < 1 || score > 10)) throw new Error('Invalid score');
         const media = await Media.findById(id).exec();
         if (!media) throw new Error('Media not found');
-        const list = await List.findOne({ user_id, media_id: id }).exec();
+        const list = await List.findOne({ user_id, media_id:id }).exec();
         if (list) throw new Error('Media already in list');
 
         const newList = new List({ user_id, media_id: id, status });
+        // TODO: MASIH SALAH BJIR GABISA NARUH SCORE
         if (score) {
             newList.score = score;
             media.score = (media.score * media.reviewed_by + score) / (media.reviewed_by + 1);
@@ -121,8 +122,8 @@ exports.updateMediaDetail = async (params, body) => {
     try {
         const { id } = params;
         const { ...media } = body;
-        if (!media.title || !media.type || !media.author || !media.description || !media.status) throw new Error('Please fill all fields');
-        const updatedMedia = await Media.findByIdAndUpdate(id, { ...media }, { new: true }).exec();
+        const updatedMedia = await Media.findByIdAndUpdate(id, { ...media, updated_at: Date.now() }, { new: true }).exec();
+        
         if (!updatedMedia) throw new Error('Media not found');
 
         return { message: 'Media updated successfully', data: updatedMedia };
