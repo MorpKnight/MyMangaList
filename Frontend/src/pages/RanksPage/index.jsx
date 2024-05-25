@@ -11,7 +11,7 @@ const RanksPage = () => {
   useEffect(() => {
     const fetchTopManga = async (page) => {
       try {
-        const response = await axios.get(`http://mymangalist.giovan.live/rank/${page}`);
+        const response = await axios.get(`http://127.0.0.0:3000/rank/${page}`);
         setTopManga(response.data.data || []);
         setTotalPages(response.data.totalPages || 1);
       } catch (error) {
