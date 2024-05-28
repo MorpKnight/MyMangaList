@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import defaultProfilePicture from "../../assets/default_propic.jpg";
 import { useNavigate } from "react-router-dom";
-import {
-  deleteUser,
-  updateUserEmail,
-  updateUserPassword,
-  updateUserUsername,
-} from "../../request/user.request";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 const ProfilePage = () => {
   const { user, setUser } = useUser();
@@ -15,72 +11,85 @@ const ProfilePage = () => {
   if (!user) {
     window.location.href = "/login";
   }
+  console.log("User:", user);
 
   const [message, setMessage] = useState("");
-  const [showUsernameInput, setShowUsernameInput] = useState(false);
-  const [showPasswordInput, setShowPasswordInput] = useState(false);
-  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [formData, setFormData] = useState({
+    username: user.username || "",
+    password: "",
+    email: user.email || "",
+  });
 
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        password: "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
-  const updateUsernameHandler = async (e) => {
-    e.preventDefault();
-    const newUsername = e.target.username.value;
+  const encodeFormData = (data) => {
+    return Object.keys(data)
+      .map(
+        (key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key])
+      )
+      .join("&");
+  };
 
+  const updateProfile = async (data) => {
     try {
-      const response = await updateUserUsername(user.user_id, newUsername);
-      if (response.message === "Username updated successfully") {
-        setUser({ ...user, username: newUsername });
-        setMessage("Username updated successfully");
-      } else {
-        setMessage(response.message);
-      }
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      console.log("Token:", token);
+      const response = await axios.put(
+        "http://localhost:5000/profile",
+        encodeFormData(data),
+        { headers: { cookies: `token=${token}` } }
+      );
+      console.log(response);
+      const result = await response.json();
+      return result;
     } catch (error) {
-      setMessage("Failed to update username");
+      console.error("Failed to update profile:", error);
+      return { message: "Failed to update profile" };
     }
   };
 
-  const updatePasswordHandler = async (e) => {
+  const updateProfileHandler = async (e) => {
     e.preventDefault();
-    const newPassword = e.target.password.value;
 
-    try {
-      const response = await updateUserPassword(user.user_id, newPassword);
-      if (response.message === "Password updated successfully") {
-        setMessage("Password updated successfully");
-      } else {
-        setMessage(response.message);
-      }
-    } catch (error) {
-      setMessage("Failed to update password");
-    }
-  };
-
-  const updateEmailHandler = async (e) => {
-    e.preventDefault();
-    const newEmail = e.target.email.value;
-
-    try {
-      const response = await updateUserEmail(user.user_id, newEmail);
-      if (response.message === "Email updated successfully") {
-        setUser({ ...user, email: newEmail });
-        setMessage("Email updated successfully");
-      } else {
-        setMessage(response.message);
-      }
-    } catch (error) {
-      setMessage("Failed to update email");
+    const response = await updateProfile({ user_id: user.id, ...formData });
+    if (response.message.includes("updated successfully")) {
+      setUser({
+        ...user,
+        username: formData.username || user.username,
+        email: formData.email || user.email,
+      },
+    );
+      setMessage("Profile updated successfully");
+    } else {
+      setMessage(response.message);
     }
   };
 
   const deleteUserHandler = async () => {
     try {
-      const response = await deleteUser(user.user_id);
-      if (response.message === "User deleted successfully") {
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      const response = await fetch(`https://mymangalist.giovan.live/profile/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in headers
+        },
+        credentials: "include", // Include credentials for cookie-based authentication
+      });
+      const result = await response.json();
+      if (result.message === "User deleted successfully") {
         setUser(null);
         navigate("/login");
       } else {
-        setMessage(response.message);
-        console.error("Delete failed:", response.message);
+        setMessage(result.message);
+        console.error("Delete failed:", result.message);
       }
     } catch (error) {
       setMessage("Failed to delete user");
@@ -88,8 +97,15 @@ const ProfilePage = () => {
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
-    <div className="flex flex-col sm:flex-row justify-center items-center h-screen ">
+    <div className="flex flex-col sm:flex-row justify-center items-center h-screen">
       <div className="bg-white shadow-sm p-4 rounded-md m-3 sm:mt-0 mt-[200px]">
         <h2 className="text-2xl font-bold mb-4">User Profile</h2>
         <p>Username: {user.username}</p>
@@ -117,87 +133,47 @@ const ProfilePage = () => {
         >
           {message}
         </p>
-
-        <div className="mb-4">
+        <form onSubmit={updateProfileHandler} className="mt-2">
+          <div className="mb-4">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              placeholder="Enter your new username"
+              value={formData.username}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              placeholder="Enter your new password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              placeholder="Enter your new email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
           <button
-            type="button"
-            onClick={() => setShowUsernameInput(!showUsernameInput)}
-            className="bg-[#C2855F] text-white py-2 px-4 rounded-md hover:bg-[#9e6c4e]"
+            type="submit"
+            className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2"
           >
-            {showUsernameInput ? "Cancel" : "Change Username"}
+            Save Changes
           </button>
-          {showUsernameInput && (
-            <form onSubmit={updateUsernameHandler} className="mt-2">
-              <input
-                type="text"
-                id="username"
-                name="username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                placeholder="Enter your new username"
-              />
-              <button
-                type="submit"
-                className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2"
-              >
-                Save Username
-              </button>
-            </form>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => setShowPasswordInput(!showPasswordInput)}
-            className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md"
-          >
-            {showPasswordInput ? "Cancel" : "Change Password"}
-          </button>
-          {showPasswordInput && (
-            <form onSubmit={updatePasswordHandler} className="mt-2">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                placeholder="Enter your new password"
-              />
-              <button
-                type="submit"
-                className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2"
-              >
-                Save Password
-              </button>
-            </form>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => setShowEmailInput(!showEmailInput)}
-            className="bg-[#C2855F] text-white py-2 px-4 rounded-md hover:bg-[#9e6c4e]"
-          >
-            {showEmailInput ? "Cancel" : "Change Email"}
-          </button>
-          {showEmailInput && (
-            <form onSubmit={updateEmailHandler} className="mt-2">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                placeholder="Enter your new email"
-              />
-              <button
-                type="submit"
-                className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2"
-              >
-                Save Email
-              </button>
-            </form>
-          )}
-        </div>
+        </form>
       </div>
     </div>
   );

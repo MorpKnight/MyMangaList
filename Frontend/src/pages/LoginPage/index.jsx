@@ -1,23 +1,44 @@
 import React, { useState } from 'react';
-import { login } from "../../request/user.request";
-import {useUser} from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
-    const {setUser} = useUser();
+    const { setUser } = useUser();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const login = async (username, password) => {
+        try {
+            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username);
+            const url = 'http://localhost:5000/auth/login';
+            const body = isEmail ? { email: username, password } : { username, password };
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(body),
+            });
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Error logging in:', error);
+        }
+    };
+
     const loginHandler = async (e) => {
         e.preventDefault();
         try {
             const response = await login(username, password);
+            console.log('Login response:', response);
             if (response.message === "Login successful") {
-                setUser(response.payload);
+                Cookies.set('token', response.token, { expires: 1 }); // Save token in cookies
+                setUser(response.data);
                 navigate("/home");
-            }
-            if (response.payload){
+            } else {
                 setError(response.message);
             }
         } catch (error) {

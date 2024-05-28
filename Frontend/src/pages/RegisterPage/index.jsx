@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import { register } from '../../request/user.request';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const RegisterPage = () => {
     const {setUser} = useUser();
@@ -10,6 +10,15 @@ const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const register = async (username, password, email) => {
+        try {
+            console.log(localStorage.getItem('token'));
+            const response = await axios.post('https://mymangalist.giovan.live/auth/register', { username, password, email },  { headers: { cookies: `token=${localStorage.getItem('token')}` } });
+            return response.data;
+        } catch (error) {
+            console.error('Error registering:', error);
+        }
+    }
 
     const registerHandler = async (e) => {
         e.preventDefault();
@@ -19,7 +28,7 @@ const RegisterPage = () => {
                 setError(response.message);
             }
             else{
-                setUser(response.payload);
+                setUser(response.data);
                 navigate("/home");
             }
         } catch (err) {

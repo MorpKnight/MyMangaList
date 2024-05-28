@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken');
 
 exports.authenticate = async (req, res, next) => {
     try {
-        // const token = req.headers.cookie.split('=')[1];
-        const token = req.headers.Authorization.split('=')[1];
+        const token = req.headers.cookies.split('=')[1];
         if (!token) throw new Error('Authentication failed');
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
