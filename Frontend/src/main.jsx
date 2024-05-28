@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ProfilePage from "./pages/ProfilePage"
+import AddMediaPage from "./pages/AddMediaPage"
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/home/add",
+        element: <AddMediaPage />,
       },
     ],
   },
