@@ -51,9 +51,9 @@ const LoginPage = () => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#CEAB79]"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-[#3577FF] text-white py-2 px-4 rounded-md hover:bg-[#4566A7]">Login</button>
+                    <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Login</button>
                 </form>
-                <p className="mt-4 text-center text-white">Don't have an account? <a href="/register" className="text-[#3577FF]">Register</a></p>
+                <p className="mt-4 text-center text-white">Don't have an account? <a href="/register" className="text-blue-500 hover:text-blue-600">Register</a></p>
             </div>
         </div>
     );

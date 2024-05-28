@@ -72,7 +72,7 @@ const Navbar = () => {
         </ul>
         {user ? (
           <div
-            className="flex text-sm px-4 py-2 leading-none border rounded text-white border-white hover:text-white-500 hover:bg-[#a33a2f] mt-4 lg:mt-0 items-center hover:cursor-pointer"
+            className="flex text-sm px-4 py-2 leading-none border rounded text-white border-white hover:text-white-500 hover:bg-blue-600 mt-4 lg:mt-0 items-center hover:cursor-pointer"
             onClick={() => navigate("/profile")}
           >
             <img
@@ -84,7 +84,7 @@ const Navbar = () => {
           </div>
         ) : (
           <button
-            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:text-white-500 hover:bg-[#7e2d24] mt-4 lg:mt-0"
+            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:text-white-500 hover:bg-blue-600 mt-4 lg:mt-0"
             onClick={() => navigate("/login")}
           >
             Login
