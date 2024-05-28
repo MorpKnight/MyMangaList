@@ -10,7 +10,7 @@ exports.register = async (body) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ username, email, password: hashedPassword });
         await user.save();
-        return { message: 'User created successfully' };
+        return { message: 'User created successfully', data: { id: user._id, username: user.username, email: user.email } };
     } catch (error) {
         return { message: error.message }
     }
