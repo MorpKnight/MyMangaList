@@ -15,7 +15,6 @@ exports.getUserProfile = async (user_id) => {
 exports.updateUserProfile = async (user_id, body) => {
     try {
         const { ...user } = body;
-        if (!user.email || !user.username || !user.password) throw new Error('Please fill all fields');
 
         const updatedUser = await User.findByIdAndUpdate(user_id, { ...user }, { new: true }).exec();
         if (!updatedUser) throw new Error('Error updating user');
