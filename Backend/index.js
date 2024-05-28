@@ -5,6 +5,7 @@ const detailRoutes = require('./src/routes/Detail.routes');
 const rankRoutes = require('./src/routes/Rank.routes');
 const homeRoutes = require('./src/routes/Home.routes');
 const profileRoutes = require('./src/routes/Profile.routes');
+const searchRoutes = require('./src/routes/Search.routes');
 
 const app = express();
 require('dotenv').config();
@@ -24,6 +25,7 @@ app.use('/detail', detailRoutes);
 app.use('/rank', rankRoutes);
 app.use('/home', homeRoutes);
 app.use('/profile', profileRoutes);
+app.use('/search', searchRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
