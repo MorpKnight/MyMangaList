@@ -8,7 +8,7 @@ exports.getHome = async () => {
         const topRatedLightNovel = await Media.find({ type: 'Light Novel' }).sort({ score: -1 }).limit(5).exec();
         const topRatedVisualNovel = await Media.find({ type: 'Visual Novel' }).sort({ score: -1 }).limit(5).exec();
         const newest = await Media.find().sort({ release_date: -1 }).limit(5).exec();
-        if (!topRated || !newest) throw new Error('Error getting home data');
+        if (!topRatedManga || !topRatedManhwa || !topRatedNovel || !topRatedLightNovel || !topRatedVisualNovel || !newest) throw new Error('No data found');
 
         return { message: 'Home data found', data: { topRatedManga, topRatedManhwa, topRatedNovel, topRatedLightNovel, topRatedVisualNovel, newest } };
     } catch (error) {
