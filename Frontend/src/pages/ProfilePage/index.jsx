@@ -48,7 +48,7 @@ const ProfilePage = () => {
         { headers: { cookies: `token=${token}` } }
       );
       console.log(response);
-      const result = await response.json();
+      const result = response.data;
       return result;
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -83,7 +83,7 @@ const ProfilePage = () => {
         },
         credentials: "include", // Include credentials for cookie-based authentication
       });
-      const result = await response.json();
+      const result = response.data();
       if (result.message === "User deleted successfully") {
         setUser(null);
         navigate("/login");
@@ -126,7 +126,7 @@ const ProfilePage = () => {
         <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
         <p
           className={
-            message && message.includes("successful")
+            message && message.includes("User updated")
               ? "text-green-500 mb-4"
               : "text-red-500 mb-4"
           }
