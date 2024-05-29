@@ -1,5 +1,6 @@
 const { User } = require('../models/User.models');
 const { List } = require('../models/List.models');
+const bcrypt = require('bcryptjs');
 
 exports.getUserProfile = async (user_id) => {
     try {
@@ -15,6 +16,11 @@ exports.getUserProfile = async (user_id) => {
 exports.updateUserProfile = async (user_id, body) => {
     try {
         const { ...user } = body;
+
+        if (user.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+        }
 
         const updatedUser = await User.findByIdAndUpdate(user_id, { ...user }, { new: true }).exec();
         if (!updatedUser) throw new Error('Error updating user');
