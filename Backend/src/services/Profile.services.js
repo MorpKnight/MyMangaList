@@ -1,6 +1,6 @@
 const { User } = require('../models/User.models');
 const { List } = require('../models/List.models');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 exports.getUserProfile = async (user_id) => {
     try {
