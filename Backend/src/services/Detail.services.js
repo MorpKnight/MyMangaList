@@ -26,7 +26,6 @@ exports.addToUserList = async (user_id, params, body) => {
         if (list) throw new Error('Media already in list');
 
         const newList = new List({ user_id, media_id: id, status });
-        // TODO: MASIH SALAH BJIR GABISA NARUH SCORE
         if (score) {
             newList.score = score;
             media.score = (media.score * media.reviewed_by + score) / (media.reviewed_by + 1);
