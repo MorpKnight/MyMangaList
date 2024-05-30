@@ -29,12 +29,12 @@ const DetailsPage = () => {
       try {
         const response = await axios.get(`${baseURL}/detail/review/${id}`);
         console.log("Reviews Response:", response.data);
-        setReviews(Array.isArray(response.data) ? response.data : []);
+        setReviews(Array.isArray(response.data.data) ? response.data.data : []);
         if (user) {
-          const userReview = response.data.find(review => review.user_id === user._id);
+          const userReview = response.data.data.find(review => review.user_id === user._id);
           if (userReview) {
             setUserReview(userReview);
-            setReviewText(userReview.text);
+            setReviewText(userReview.review_text); // Use review_text instead of text
           }
         }
       } catch (error) {
@@ -59,10 +59,11 @@ const DetailsPage = () => {
   const handleReviewSubmit = async () => {
     try {
       if (userReview) {
-        const response = await axios.put(`${baseURL}/detail/review/${id}`, { text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
+        const response = await axios.put(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
         setUserReview(response.data);
+        setReviews(reviews.map(review => (review._id === response.data._id ? response.data : review)));
       } else {
-        const response = await axios.post(`${baseURL}/detail/review/${id}`, { text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
+        const response = await axios.post(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
         setReviews([...reviews, response.data]);
         setUserReview(response.data);
       }
@@ -90,16 +91,29 @@ const DetailsPage = () => {
   console.log("Details:", details);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-gray-100 py-4 px-4">
       <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="bg-cover bg-center h-64" style={{ backgroundImage: `url(${details.image_cover})` }}>
         </div>
         <div className="p-6">
           <h1 className="text-4xl font-bold mb-4">{details.title}</h1>
-          <p className="text-gray-800 mb-4">{details.description}</p>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-            <p className="text-gray-600 mb-2 md:mb-0"><strong>Author:</strong> {details.author}</p>
-            <p className="text-gray-600"><strong>Status:</strong> {details.status}</p>
+          <div className="flex flex-wrap mb-4">
+            {details.genre.map((genre) => (
+              <span key={genre} className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full mr-2 mb-2">
+                {genre}
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-col mb-4">
+            <p className="text-gray-600 mb-2"><strong>Author:</strong> {details.author}</p>
+            <p className="text-gray-600 mb-2"><strong>Status:</strong> {details.status}</p>
+            {details.release_date && (
+              <p className="text-gray-600 mb-2"><strong>Release date:</strong> {new Date(details.release_date).toLocaleDateString()}</p>
+            )}
+            <p className="text-gray-600 mb-2"><strong>Score:</strong> {details.score}</p>
+          </div>
+          <div className="p-4 bg-gray-100 rounded-lg mb-4">
+            <p className="text-gray-800">{details.description}</p>
           </div>
           {user && (
             <button 
@@ -114,7 +128,7 @@ const DetailsPage = () => {
             {user && userReview && (
               <div className="mb-4 p-4 bg-yellow-100 rounded-lg shadow-sm">
                 <h3 className="text-2xl font-bold mb-2">Your Review</h3>
-                <p className="text-gray-700 mb-4">{userReview.text}</p>
+                <p className="text-gray-700 mb-4">{userReview.review_text}</p>
                 <textarea 
                   value={reviewText} 
                   onChange={(e) => setReviewText(e.target.value)} 
@@ -140,7 +154,7 @@ const DetailsPage = () => {
             {reviews.length > 0 ? (
               reviews.map((review) => (
                 <div key={review._id} className="mb-4 p-4 bg-gray-100 rounded-lg shadow-sm">
-                  <p className="text-gray-800">{review.text}</p>
+                  <p className="text-gray-800">{review.review_text}</p>
                   <small className="text-gray-600">By: {review.user_id}</small> {/* Ideally, display username */}
                 </div>
               ))
