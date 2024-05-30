@@ -36,7 +36,7 @@ const AddMediaPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://mymangalist.giovan.live/home/add', formData);
+      await axios.post('https://mymangalist.giovan.live/home/add', formData);
       navigate('/home');
     } catch (error) {
       console.error('Failed to add media', error);
