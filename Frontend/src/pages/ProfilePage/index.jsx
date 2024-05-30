@@ -76,13 +76,10 @@ const ProfilePage = () => {
   const deleteUserHandler = async () => {
     try {
       const token = Cookies.get("token"); // Retrieve token from cookies
-      const response = await fetch(`https://mymangalist.giovan.live/profile/`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
-        },
-        credentials: "include", // Include credentials for cookie-based authentication
-      });
+      const response = await axios.delete(
+        "http://localhost:5000/profile",{},
+        { headers: { cookies: `token=${token}` } }
+      );
       const result = response.data();
       if (result.message === "User deleted successfully") {
         setUser(null);
@@ -96,6 +93,38 @@ const ProfilePage = () => {
       console.error("Failed to delete user:", error);
     }
   };
+
+  const userLists = async () => {
+    try {
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      const response = await axios.get(
+        `http://localhost:5000/profile//list`,
+        { headers: { cookies: `token=${token}` } }
+      );
+      const result = response.data;
+      return result;
+    } catch (error) {
+      console.error("Failed to get user lists:", error);
+      return { message: "Failed to get user lists" };
+    }
+  };
+
+  const userReviews = async () => {
+    try {
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      const response = await axios.get(
+        `http://localhost:5000/profile/review`,
+        { headers: { cookies: `token=${token}` } }
+      );
+      const result = response.data;
+      return result;
+    } catch (error) {
+      console.error("Failed to get user reviews:", error);
+      return { message: "Failed to get user reviews" };
+    }
+  };
+  console.log("User Lists:", userLists());
+  console.log("User Reviews:", userReviews());
 
   const handleChange = (e) => {
     setFormData({
