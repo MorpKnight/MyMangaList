@@ -108,7 +108,7 @@ exports.deleteReview = async (user_id, params) => {
 exports.getMediaReview = async (params) => {
     try {
         const { id } = params;
-        const reviews = await List.find({ media_id: id }).exec();
+        const reviews = await List.find({ media_id: id }).populate('user_id', 'username').exec();
         if (!reviews) throw new Error('No reviews found');
 
         return { message: 'Reviews found', data: reviews };

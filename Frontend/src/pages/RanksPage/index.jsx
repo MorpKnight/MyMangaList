@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const RanksPage = () => {
@@ -8,10 +9,12 @@ const RanksPage = () => {
   const [filterType, setFilterType] = useState('All');
   const [tooltip, setTooltip] = useState({ visible: false, content: '', position: { x: 0, y: 0 } });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchTopManga = async (page) => {
       try {
-        const response = await axios.get(`http://127.0.0.0:3000/rank/${page}`);
+        const response = await axios.get(`http://mymangalist.giovan.live/rank/${page}`);
         setTopManga(response.data.data || []);
         setTotalPages(response.data.totalPages || 1);
       } catch (error) {
@@ -39,6 +42,10 @@ const RanksPage = () => {
 
   const handleMouseLeave = () => {
     setTooltip({ visible: false, content: '', position: { x: 0, y: 0 } });
+  };
+
+  const handleTitleClick = (id) => {
+    navigate(`/details/${id}`);
   };
 
   const filteredManga = topManga.filter(manga => filterType === 'All' || manga.type === filterType);
@@ -75,6 +82,7 @@ const RanksPage = () => {
                   <td className="w-16 py-3 px-4 text-center">{(currentPage - 1) * 25 + index + 1}</td>
                   <td
                     className="w-1/4 py-3 px-4 cursor-pointer"
+                    onClick={() => handleTitleClick(manga._id)}
                     onMouseEnter={(e) => handleMouseEnter(e, manga.description)}
                     onMouseLeave={handleMouseLeave}
                   >

@@ -1,6 +1,6 @@
 const { User } = require('../models/User.models');
 const { List } = require('../models/List.models');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 exports.getUserProfile = async (user_id) => {
     try {
@@ -44,7 +44,7 @@ exports.deleteUserProfile = async (user_id) => {
 
 exports.viewUserList = async (user_id) => {
     try {
-        const userLists = await List.find({ user_id }).exec();
+        const userLists = await List.find({ user_id }).populate('media_id').exec();
         if (!userLists) throw new Error('Error getting user lists');
 
         return { message: 'User lists found', data: userLists };
