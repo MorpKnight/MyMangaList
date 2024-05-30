@@ -19,7 +19,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://mymangalist.giovan.live/home');
+        const response = await axios.get('https://mymangalist.giovan.live/home');
         if (response.status === 200 && response.data.data) {
           setMediaData({
             topRatedManga: response.data.data.topRatedManga || [],

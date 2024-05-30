@@ -13,7 +13,7 @@ const LoginPage = () => {
     const login = async (username, password) => {
         try {
             const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username);
-            const url = 'http://mymangalist.giovan.live/auth/login';
+            const url = 'https://mymangalist.giovan.live/auth/login';
             const body = isEmail ? { email: username, password } : { username, password };
             const response = await fetch(url, {
                 method: 'POST',
