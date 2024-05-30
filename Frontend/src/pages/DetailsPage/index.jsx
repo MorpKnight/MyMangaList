@@ -17,7 +17,7 @@ const DetailsPage = () => {
   const [endDate, setEndDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const baseURL = "https://mymangalist.giovan.live";
+  const baseURL = "http://localhost:5000";
 
   const statusOptions = ['Reading', 'Completed', 'On-Hold', 'Dropped', 'Plan to Read'];
 

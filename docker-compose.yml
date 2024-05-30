@@ -1,25 +1,25 @@
-version: '3.8'
+version: '3.4'
+
 services:
   backend:
+    image: backend
     build:
-      context: ./Backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./Backend:/usr/src/app
-    ports:
-      - 6666:6666
+      context: Backend
+      dockerfile: ./Dockerfile
     environment:
-      - NODE_ENV=production
-    command: npm start
-
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URL: mongodb+srv://giovanchristoffel:CeVmT9gxNxTWoiK9@praksbd.h6r4puo.mongodb.net/MyMangaList?retryWrites=true&w=majority&appName=PrakSBD
+      JWT_SECRET: 713287a095f08f5124bf6e23a360640d0d024e8108bb66cec1e2ac316d4d6c1e6b195a2d85bf08e9c6c5909a8c66d60c4b43224702c2229b7bad6ca71438ea3e
+    ports:
+      - 5000:5000
+      
   frontend:
+    image: frontend
     build:
-      context: ./Frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ./Frontend:/usr/src/app
-    ports:
-      - 6667:6667
+      context: Frontend
+      dockerfile: ./Dockerfile
     environment:
-      - NODE_ENV=production
-    command: npm run dev
+      NODE_ENV: production
+    ports:
+      - 5173:5173
