@@ -10,6 +10,8 @@ const HomePage = () => {
     topRatedManga: [], topRatedManhwa: [], topRatedNovel: [],
     topRatedLightNovel: [], topRatedVisualNovel: [], newest: []
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -41,10 +43,10 @@ const HomePage = () => {
 
   const renderMediaItems = (items) => {
     if (!items.length) {
-      return <div>No items available</div>;
+      return <div className='text-white'>No items available</div>;
     }
     return items.map((item, index) => (
-      <div key={index} className="bg-gray-300 w-48 h-48 rounded-md p-4 flex flex-col justify-between mx-auto">
+      <div key={index} className="bg-gray-300 w-48 h-48 rounded-md p-4 flex flex-col justify-between mx-auto hover:cursor-pointer" onClick={() => navigate(`/details/${item._id}`)}>
         <h3 className="text-lg font-bold">{item.title}</h3>
         <p className="text-sm">{item.author}</p>
         <p className="text-sm">Score: {item.score}</p>

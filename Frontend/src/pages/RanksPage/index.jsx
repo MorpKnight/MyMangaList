@@ -81,7 +81,7 @@ const RanksPage = () => {
                 <tr key={manga._id} className="hover:bg-gray-200">
                   <td className="w-16 py-3 px-4 text-center">{(currentPage - 1) * 25 + index + 1}</td>
                   <td
-                    className="w-1/4 py-3 px-4 cursor-pointer text-blue-500 underline"
+                    className="w-1/4 py-3 px-4 cursor-pointer"
                     onClick={() => handleTitleClick(manga._id)}
                     onMouseEnter={(e) => handleMouseEnter(e, manga.description)}
                     onMouseLeave={handleMouseLeave}

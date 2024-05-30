@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 const DetailsPage = () => {
@@ -11,8 +12,14 @@ const DetailsPage = () => {
   const [reviewText, setReviewText] = useState("");
   const [userReview, setUserReview] = useState(null);
   const [status, setStatus] = useState("Reading");
+  const [score, setScore] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const baseURL = "http://mymangalist.giovan.live";
+
+  const statusOptions = ['Reading', 'Completed', 'On-Hold', 'Dropped', 'Plan to Read'];
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -30,8 +37,9 @@ const DetailsPage = () => {
         const response = await axios.get(`${baseURL}/detail/review/${id}`);
         console.log("Reviews Response:", response.data);
         setReviews(Array.isArray(response.data.data) ? response.data.data : []);
+        
         if (user) {
-          const userReview = response.data.data.find(review => review.user_id === user._id);
+          const userReview = response.data.data.find(review => review.user_id._id === user.id);
           if (userReview) {
             setUserReview(userReview);
             setReviewText(userReview.review_text); // Use review_text instead of text
@@ -49,7 +57,16 @@ const DetailsPage = () => {
 
   const handleAddToList = async () => {
     try {
-      const response = await axios.post(`${baseURL}/detail/add-to-list/${id}`, { status }, { headers: { Authorization: `Bearer ${user.token}` } });
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      
+      // Validate score
+      if (score && (score < 1 || score > 10)) {
+        setErrorMessage("Score must be between 1 and 10.");
+        return;
+      }
+
+      const data = { status, score, start_date: startDate, end_date: endDate };
+      const response = await axios.post(`${baseURL}/detail/add-to-list/${id}`, data, { headers: { cookies: `token=${token}` } });
       console.log("Added to list:", response.data);
     } catch (error) {
       console.error("Error adding to list:", error);
@@ -58,12 +75,13 @@ const DetailsPage = () => {
 
   const handleReviewSubmit = async () => {
     try {
+      const token = Cookies.get("token"); // Retrieve token from cookies
       if (userReview) {
-        const response = await axios.put(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
+        const response = await axios.put(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { cookies: `token=${token}` } });
         setUserReview(response.data);
         setReviews(reviews.map(review => (review._id === response.data._id ? response.data : review)));
       } else {
-        const response = await axios.post(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { Authorization: `Bearer ${user.token}` } });
+        const response = await axios.post(`${baseURL}/detail/review/${id}`, { review_text: reviewText }, { headers: { cookies: `token=${token}` } });
         setReviews([...reviews, response.data]);
         setUserReview(response.data);
       }
@@ -75,7 +93,8 @@ const DetailsPage = () => {
 
   const handleReviewDelete = async () => {
     try {
-      await axios.delete(`${baseURL}/detail/review/${id}`, { headers: { Authorization: `Bearer ${user.token}` } });
+      const token = Cookies.get("token"); // Retrieve token from cookies
+      await axios.delete(`${baseURL}/detail/review/${userReview._id}`, { headers: { cookies: `token=${token}` } });
       setReviews(reviews.filter(review => review._id !== userReview._id));
       setUserReview(null);
       setReviewText("");
@@ -85,16 +104,15 @@ const DetailsPage = () => {
   };
 
   if (!details) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen"><div className="text-2xl">Loading...</div></div>;
   }
 
   console.log("Details:", details);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-4 px-4">
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="bg-cover bg-center h-64" style={{ backgroundImage: `url(${details.image_cover})` }}>
-        </div>
+        <div className="bg-cover bg-center h-64" style={{ backgroundImage: `url(${details.image_cover})` }}></div>
         <div className="p-6">
           <h1 className="text-4xl font-bold mb-4">{details.title}</h1>
           <div className="flex flex-wrap mb-4">
@@ -116,12 +134,55 @@ const DetailsPage = () => {
             <p className="text-gray-800">{details.description}</p>
           </div>
           {user && (
-            <button 
-              onClick={handleAddToList} 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 mb-4"
-            >
-              Add to List
-            </button>
+            <div className="mb-4">
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <select 
+                id="status" 
+                value={status} 
+                onChange={(e) => setStatus(e.target.value)} 
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              >
+                {statusOptions.map(option => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+              <label htmlFor="score" className="block text-sm font-medium text-gray-700 mb-2 mt-4">Score</label>
+              <input
+                type="number"
+                id="score"
+                value={score}
+                onChange={(e) => setScore(e.target.value)}
+                min="1"
+                max="10"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                placeholder="Optional"
+              />
+              {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+              <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-2 mt-4">Start Date</label>
+              <input
+                type="date"
+                id="start_date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                placeholder="Optional"
+              />
+              <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 mb-2 mt-4">End Date</label>
+              <input
+                type="date"
+                id="end_date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                placeholder="Optional"
+              />
+              <button 
+                onClick={handleAddToList} 
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 mt-4"
+              >
+                Add to List
+              </button>
+            </div>
           )}
           <div>
             <h2 className="text-3xl font-bold mb-4">Reviews</h2>
@@ -155,7 +216,7 @@ const DetailsPage = () => {
               reviews.map((review) => (
                 <div key={review._id} className="mb-4 p-4 bg-gray-100 rounded-lg shadow-sm">
                   <p className="text-gray-800">{review.review_text}</p>
-                  <small className="text-gray-600">By: {review.user_id}</small> {/* Ideally, display username */}
+                  <small className="text-gray-600">By: {review.user_id && review.user_id.username ? review.user_id.username : "Unknown User"}</small>
                 </div>
               ))
             ) : (

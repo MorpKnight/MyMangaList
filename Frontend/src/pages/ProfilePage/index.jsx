@@ -14,6 +14,7 @@ const ProfilePage = () => {
   console.log("User:", user);
 
   const [message, setMessage] = useState("");
+  const [userLists, setUserLists] = useState([]);
   const [formData, setFormData] = useState({
     username: user.username || "",
     password: "",
@@ -30,6 +31,24 @@ const ProfilePage = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const fetchUserLists = async () => {
+      try {
+        const token = Cookies.get("token"); // Retrieve token from cookies
+        const response = await axios.get(`http://mymangalist.giovan.live/profile/list`, {
+          headers: { cookies: `token=${token}` },
+        });
+        console.log("Response data.data:", response.data.data);
+        setUserLists(response.data.data);
+        console.log("User lists:", userLists);
+      } catch (error) {
+        console.error("Failed to get user lists:", error);
+      }
+    };
+
+    fetchUserLists();
+  }, []);
+
   const encodeFormData = (data) => {
     return Object.keys(data)
       .map(
@@ -43,7 +62,7 @@ const ProfilePage = () => {
       const token = Cookies.get("token"); // Retrieve token from cookies
       console.log("Token:", token);
       const response = await axios.put(
-        "http://localhost:5000/profile",
+        "http://mymangalist.giovan.live/profile",
         encodeFormData(data),
         { headers: { cookies: `token=${token}` } }
       );
@@ -65,8 +84,7 @@ const ProfilePage = () => {
         ...user,
         username: formData.username || user.username,
         email: formData.email || user.email,
-      },
-    );
+      });
       setMessage("Profile updated successfully");
     } else {
       setMessage(response.message);
@@ -77,7 +95,7 @@ const ProfilePage = () => {
     try {
       const token = Cookies.get("token"); // Retrieve token from cookies
       const response = await axios.delete(
-        "http://localhost:5000/profile",{},
+        "http://mymangalist.giovan.live/profile", {},
         { headers: { cookies: `token=${token}` } }
       );
       const result = response.data();
@@ -94,38 +112,6 @@ const ProfilePage = () => {
     }
   };
 
-  const userLists = async () => {
-    try {
-      const token = Cookies.get("token"); // Retrieve token from cookies
-      const response = await axios.get(
-        `http://localhost:5000/profile//list`,
-        { headers: { cookies: `token=${token}` } }
-      );
-      const result = response.data;
-      return result;
-    } catch (error) {
-      console.error("Failed to get user lists:", error);
-      return { message: "Failed to get user lists" };
-    }
-  };
-
-  const userReviews = async () => {
-    try {
-      const token = Cookies.get("token"); // Retrieve token from cookies
-      const response = await axios.get(
-        `http://localhost:5000/profile/review`,
-        { headers: { cookies: `token=${token}` } }
-      );
-      const result = response.data;
-      return result;
-    } catch (error) {
-      console.error("Failed to get user reviews:", error);
-      return { message: "Failed to get user reviews" };
-    }
-  };
-  console.log("User Lists:", userLists());
-  console.log("User Reviews:", userReviews());
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -134,28 +120,28 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row justify-center items-center h-screen">
-      <div className="bg-white shadow-sm p-4 rounded-md m-3 sm:mt-0 mt-[200px]">
+    <div className="flex flex-col sm:flex-row justify-center items-start h-screen bg-gray-100 pt-[80px]">
+      <div className="bg-white shadow-sm p-4 rounded-md m-3 sm:mt-0 mt-[120px] w-full sm:w-1/3">
         <h2 className="text-2xl font-bold mb-4">User Profile</h2>
-        <p>Username: {user.username}</p>
-        <p>Email: {user.email}</p>
+        <p><strong>Username:</strong> {user.username}</p>
+        <p><strong>Email:</strong> {user.email}</p>
         <img
           src={user.profile_picture || defaultProfilePicture}
           alt="Profile Picture"
-          className="rounded-full w-32 h-32 object-cover object-center"
+          className="rounded-full w-32 h-32 object-cover object-center mt-4 mb-4"
         />
         <button
           onClick={deleteUserHandler}
-          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 mt-4"
+          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 mt-4 w-full"
         >
           Delete User
         </button>
       </div>
-      <div className="bg-white p-8 shadow-md rounded-md">
+      <div className="bg-white p-8 shadow-md rounded-md m-3 w-full sm:w-2/3">
         <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
         <p
           className={
-            message && message.includes("User updated")
+            message && message.includes("Profile updated")
               ? "text-green-500 mb-4"
               : "text-red-500 mb-4"
           }
@@ -164,6 +150,7 @@ const ProfilePage = () => {
         </p>
         <form onSubmit={updateProfileHandler} className="mt-2">
           <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
               id="username"
@@ -175,6 +162,7 @@ const ProfilePage = () => {
             />
           </div>
           <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"
@@ -186,6 +174,7 @@ const ProfilePage = () => {
             />
           </div>
           <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               id="email"
@@ -198,11 +187,27 @@ const ProfilePage = () => {
           </div>
           <button
             type="submit"
-            className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2"
+            className="bg-[#C2855F] hover:bg-[#9e6c4e] text-white py-2 px-4 rounded-md mt-2 w-full"
           >
             Save Changes
           </button>
         </form>
+      </div>
+      <div className="bg-white p-8 shadow-md rounded-md m-3 w-full sm:w-2/3">
+        <h2 className="text-2xl font-bold mb-4">User Lists and Reviews</h2>
+        {userLists.length > 0 ? (
+          userLists.map((list) => (
+            <div key={list._id} className="border-b border-gray-200 pb-4 mb-4">
+              <p><strong>Media Title:</strong> {list.media_id.title}</p>
+              <p><strong>Review Text:</strong> {list.review_text || 'No review provided'}</p>
+              <p><strong>Status:</strong> {list.status}</p>
+              <p><strong>Created At:</strong> {new Date(list.created_at).toLocaleString()}</p>
+              <p><strong>Updated At:</strong> {new Date(list.updated_at).toLocaleString()}</p>
+            </div>
+          ))
+        ) : (
+          <p>No user lists found</p>
+        )}
       </div>
     </div>
   );
