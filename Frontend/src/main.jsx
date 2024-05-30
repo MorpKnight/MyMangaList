@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import RanksPage from "./pages/RanksPage";
+import DetailsPage from "./pages/DetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -31,9 +32,13 @@ const router = createBrowserRouter([
         element: <ProfilePage />,
       },
       {
-        path: "/ranks",  // Add the /ranks path
+        path: "/ranks",
         element: <RanksPage />,
       },
+      {
+        path: "/details/:id",
+        element: <DetailsPage />,
+      }
     ],
   },
   {
