@@ -1,14 +1,18 @@
+
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { UserProvider } from "./context/UserContext"
 import "./index.css"
-import App from "./App"
-import HomePage from "./pages/HomePage"
-import LoginPage from "./pages/LoginPage"
-import RegisterPage from "./pages/RegisterPage"
-import ProfilePage from "./pages/ProfilePage"
 import AddMediaPage from "./pages/AddMediaPage"
+import App from "./App";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import RanksPage from "./pages/RanksPage";
+import DetailsPage from "./pages/DetailsPage";
+
 
 const router = createBrowserRouter([
   {
@@ -34,6 +38,14 @@ const router = createBrowserRouter([
         path: "/home/add",
         element: <AddMediaPage />,
       },
+      {
+        path: "/ranks",
+        element: <RanksPage />,
+      },
+      {
+        path: "/details/:id",
+        element: <DetailsPage />,
+      }
     ],
   },
   {
