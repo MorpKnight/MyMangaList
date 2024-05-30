@@ -4,6 +4,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production --silent && mv node_modules ../
 COPY . .
-EXPOSE 5000
+EXPOSE 6666
 USER node
 CMD ["npm", "start"]

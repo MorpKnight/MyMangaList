@@ -28,7 +28,7 @@ exports.addToUserList = async (user_id, params, body) => {
         const newList = new List({ user_id, media_id: id, status });
         if (score) {
             newList.score = score;
-            media.score = (media.score * media.reviewed_by + score) / (media.reviewed_by + 1);
+            media.score = (Number(media.score) * Number(media.reviewed_by) + Number(score)) / (Number(media.reviewed_by) + 1);
             media.reviewed_by += 1;
             await media.save();
         }
