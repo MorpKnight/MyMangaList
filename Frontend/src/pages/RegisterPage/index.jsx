@@ -13,7 +13,7 @@ const RegisterPage = () => {
     const register = async (username, password, email) => {
         try {
             console.log(localStorage.getItem('token'));
-            const response = await axios.post('http://mymangalist.giovan.live/auth/register', { username, password, email },  { headers: { cookies: `token=${localStorage.getItem('token')}` } });
+            const response = await axios.post('http://localhost:5000/auth/register', { username, password, email },  { headers: { cookies: `token=${localStorage.getItem('token')}` } });
             return response.data;
         } catch (error) {
             console.error('Error registering:', error);

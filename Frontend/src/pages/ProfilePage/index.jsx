@@ -35,7 +35,7 @@ const ProfilePage = () => {
     const fetchUserLists = async () => {
       try {
         const token = Cookies.get("token"); // Retrieve token from cookies
-        const response = await axios.get(`http://mymangalist.giovan.live/profile/list`, {
+        const response = await axios.get(`http://localhost:5000/profile/list`, {
           headers: { cookies: `token=${token}` },
         });
         console.log("Response data.data:", response.data.data);
@@ -62,7 +62,7 @@ const ProfilePage = () => {
       const token = Cookies.get("token"); // Retrieve token from cookies
       console.log("Token:", token);
       const response = await axios.put(
-        "http://mymangalist.giovan.live/profile",
+        "http://localhost:5000/profile",
         encodeFormData(data),
         { headers: { cookies: `token=${token}` } }
       );
@@ -95,7 +95,7 @@ const ProfilePage = () => {
     try {
       const token = Cookies.get("token"); // Retrieve token from cookies
       const response = await axios.delete(
-        "http://mymangalist.giovan.live/profile", {},
+        "http://localhost:5000/profile", {},
         { headers: { cookies: `token=${token}` } }
       );
       const result = response.data();

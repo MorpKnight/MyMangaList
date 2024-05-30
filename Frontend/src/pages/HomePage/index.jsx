@@ -19,7 +19,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://mymangalist.giovan.live/home');
+        const response = await axios.get('http://localhost:5000/home');
         if (response.status === 200 && response.data.data) {
           setMediaData({
             topRatedManga: response.data.data.topRatedManga || [],
@@ -76,7 +76,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100">
       <main className="w-4/5 max-w-5xl mt-20">
-        {user && user.role === 'admin' && (
+        {user && user.role === 'Admin' && (
           <button
             className="mb-8 bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-[#7e2d24]"
             onClick={() => navigate('/home/add')}
